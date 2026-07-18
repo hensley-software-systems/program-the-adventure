@@ -5,16 +5,20 @@ export function PlaybackControls({
   onReset,
   onStop,
   onHint,
+  onPause,
   canPlay,
   isRunning,
+  isPaused,
   disabled,
 }: {
   onPlay: () => void;
   onReset: () => void;
   onStop: () => void;
   onHint: () => void;
+  onPause?: () => void;
   canPlay: boolean;
   isRunning: boolean;
+  isPaused?: boolean;
   disabled?: boolean;
 }) {
   return (
@@ -37,6 +41,17 @@ export function PlaybackControls({
       >
         ↺ Start Over
       </button>
+      {isRunning && (
+        <button
+          type="button"
+          onClick={onPause}
+          aria-label={isPaused ? "Resume program" : "Pause program"}
+          aria-pressed={isPaused}
+          className="flex min-h-16 min-w-24 items-center justify-center rounded-2xl bg-[var(--warm-yellow)] px-4 text-lg font-bold shadow-md"
+        >
+          {isPaused ? "▶ Resume" : "⏸ Pause"}
+        </button>
+      )}
       {isRunning && (
         <button
           type="button"

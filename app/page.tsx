@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LEVELS } from "@/data/levels";
+import { LevelPicker } from "@/components/LevelPicker";
+import { RandomLevelMenuButton } from "@/components/RandomLevelMenu";
 
 export default function HomePage() {
   return (
@@ -14,32 +15,23 @@ export default function HomePage() {
         <p className="mt-3 text-lg text-[var(--text-dark)]/80">
           Help Bloop the robot with picture commands. No typing needed!
         </p>
-        <Link
-          href="/level/1"
-          className="mt-8 inline-flex min-h-14 min-w-56 items-center justify-center rounded-2xl bg-[var(--play-green)] px-8 text-xl font-bold text-white shadow-lg transition hover:bg-[var(--play-green-dark)] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[var(--play-green-dark)]"
-          aria-label="Start playing level one"
-        >
-          ▶ Start Adventure
-        </Link>
+        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+          <Link
+            href="/level/1"
+            className="inline-flex min-h-14 min-w-56 items-center justify-center rounded-2xl bg-[var(--play-green)] px-8 text-xl font-bold text-white shadow-lg transition hover:bg-[var(--play-green-dark)] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[var(--play-green-dark)]"
+            aria-label="Start playing level one"
+          >
+            ▶ Start Adventure
+          </Link>
+          <RandomLevelMenuButton />
+        </div>
       </div>
 
-      <section
-        className="grid w-full gap-3 sm:grid-cols-2"
-        aria-label="All levels"
-      >
-        {LEVELS.map((level) => (
-          <Link
-            key={level.id}
-            href={`/level/${level.id}`}
-            className="rounded-2xl bg-white/80 px-5 py-4 text-left shadow-md transition hover:bg-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[var(--bloop-blue)]"
-          >
-            <div className="text-sm font-semibold text-[var(--bloop-dark)]">
-              Level {level.id}
-            </div>
-            <div className="text-lg font-bold">{level.title}</div>
-            <div className="text-sm opacity-70">{level.missionText}</div>
-          </Link>
-        ))}
+      <section aria-label="All levels">
+        <h2 className="mb-3 text-xl font-bold text-[var(--text-dark)]">
+          Pick any level
+        </h2>
+        <LevelPicker />
       </section>
     </main>
   );

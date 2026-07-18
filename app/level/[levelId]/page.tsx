@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getLevelById } from "@/data/levels";
+import { getLevelById, LEVELS } from "@/data/levels";
 import { GameScreen } from "@/components/GameScreen";
 
 interface LevelPageProps {
@@ -19,7 +19,7 @@ export default async function LevelPage({ params }: LevelPageProps) {
 }
 
 export function generateStaticParams() {
-  return Array.from({ length: 10 }, (_, index) => ({
-    levelId: String(index + 1),
+  return LEVELS.map((level) => ({
+    levelId: String(level.id),
   }));
 }

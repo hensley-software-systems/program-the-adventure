@@ -90,25 +90,19 @@ export function ParentPanel({
         <section className="mt-6">
           <h3 className="text-lg font-bold">Jump to level</h3>
           <div className="mt-2 flex flex-wrap gap-2">
-            {LEVELS.map((level) => {
-              const unlocked = level.id <= progress.highestUnlockedLevel;
-              return (
-                <Link
-                  key={level.id}
-                  href={unlocked ? `/level/${level.id}` : "#"}
-                  onClick={(event) => {
-                    if (!unlocked) event.preventDefault();
-                  }}
-                  className={`rounded-xl px-3 py-2 text-sm font-bold ${
-                    unlocked
-                      ? "bg-[var(--sky)] text-[var(--text-dark)]"
-                      : "cursor-not-allowed bg-gray-200 text-gray-400"
-                  } ${level.id === currentLevelId ? "ring-4 ring-[var(--bloop-blue)]" : ""}`}
-                >
-                  {level.id}
-                </Link>
-              );
-            })}
+            {LEVELS.map((level) => (
+              <Link
+                key={level.id}
+                href={`/level/${level.id}`}
+                className={`rounded-xl bg-[var(--sky)] px-3 py-2 text-sm font-bold text-[var(--text-dark)] hover:opacity-90 ${
+                  level.id === currentLevelId
+                    ? "ring-4 ring-[var(--bloop-blue)]"
+                    : ""
+                }`}
+              >
+                {level.id}
+              </Link>
+            ))}
           </div>
         </section>
 

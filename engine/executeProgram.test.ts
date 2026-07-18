@@ -56,6 +56,7 @@ function createContext(
       context.doorStates = states;
     },
     onAction: () => {},
+    waitIfPaused: async () => {},
   };
 
   void programLength;
@@ -146,6 +147,29 @@ describe("executeProgram", () => {
     controller.abort();
     const result = await executeProgram([createCommand("moveForward")], context);
     expect(result.status).toBe("cancelled");
+  });
+
+  it("completes level 11 master quest", async () => {
+    const { context } = createContext(11, 13);
+    const result = await executeProgram(
+      [
+        createCommand("turnLeft"),
+        createCommand("moveForward"),
+        createCommand("turnRight"),
+        createCommand("moveForward"),
+        createCommand("jump"),
+        createCommand("sayMoo"),
+        createCommand("moveForward"),
+        createCommand("moveForward"),
+        createCommand("turnRight"),
+        createCommand("moveForward"),
+        createCommand("moveForward"),
+        createCommand("turnRight"),
+        createCommand("moveForward"),
+      ],
+      context,
+    );
+    expect(result.status).toBe("complete");
   });
 });
 

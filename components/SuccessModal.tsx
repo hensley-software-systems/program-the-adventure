@@ -5,12 +5,14 @@ export function SuccessModal({
   onContinue,
   onReplay,
   hasNextLevel,
+  continueLabel = "Next Level →",
   reducedMotion,
 }: {
   message: string;
   onContinue: () => void;
   onReplay: () => void;
   hasNextLevel: boolean;
+  continueLabel?: string;
   reducedMotion?: boolean;
 }) {
   return (
@@ -49,7 +51,7 @@ export function SuccessModal({
               onClick={onContinue}
               className="min-h-14 flex-1 rounded-2xl bg-[var(--play-green)] px-4 text-lg font-bold text-white"
             >
-              Next Level →
+              {continueLabel}
             </button>
           )}
           <button

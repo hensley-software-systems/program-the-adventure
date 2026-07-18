@@ -34,6 +34,7 @@ function createInitialState(level: LevelDefinition): GameState {
     status: "editing",
     message: null,
     lastAction: null,
+    isPaused: false,
   };
 }
 
@@ -47,6 +48,42 @@ export function useGameState(
   );
   const abortRef = useRef<AbortController | null>(null);
   const hintIndexRef = useRef(0);
+  const isPausedRef = useRef(false);
+  const pauseWaitersRef = useRef<Array<() => void>>([]);
+
+  const resumeFromPause = useCallback(() => {
+    isPausedRef.current = false;
+    const waiters = pauseWaitersRef.current;
+    pauseWaitersRef.current = [];
+    waiters.forEach((resolve) => resolve());
+  }, []);
+
+  const waitIfPaused = useCallback(async () => {
+    if (!isPausedRef.current) {
+      return;
+    }
+
+    await new Promise<void>((resolve) => {
+      pauseWaitersRef.current.push(resolve);
+    });
+  }, []);
+
+  const togglePause = useCallback(() => {
+    setGameState((current) => {
+      if (current.status !== "running") {
+        return current;
+      }
+
+      const nextPaused = !isPausedRef.current;
+      isPausedRef.current = nextPaused;
+
+      if (!nextPaused) {
+        resumeFromPause();
+      }
+
+      return { ...current, isPaused: nextPaused };
+    });
+  }, [resumeFromPause]);
 
   useEffect(() => {
     setGameState(createInitialState(level));
@@ -56,9 +93,10 @@ export function useGameState(
 
   const resetLevel = useCallback(() => {
     abortRef.current?.abort();
+    resumeFromPause();
     setGameState(createInitialState(level));
     hintIndexRef.current = 0;
-  }, [level]);
+  }, [level, resumeFromPause]);
 
   const addCommand = useCallback(
     (type: CommandType) => {
@@ -142,12 +180,13 @@ export function useGameState(
 
   const stopProgram = useCallback(() => {
     abortRef.current?.abort();
+    resumeFromPause();
     setGameState((current) => ({
       ...createInitialState(level),
       program: current.program,
       status: "editing",
     }));
-  }, [level]);
+  }, [level, resumeFromPause]);
 
   const resumeEditing = useCallback(() => {
     setGameState((current) => ({
@@ -164,6 +203,7 @@ export function useGameState(
     }
 
     abortRef.current?.abort();
+    resumeFromPause();
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -173,6 +213,7 @@ export function useGameState(
       program: gameState.program,
       status: "running",
       message: null,
+      isPaused: false,
     });
 
     if (settings.actItOutEnabled) {
@@ -227,9 +268,11 @@ export function useGameState(
         }
         if (action === "moo") playMoo(settings.soundEffectsEnabled);
       },
+      waitIfPaused,
     });
 
     if (result.status === "cancelled") {
+      resumeFromPause();
       setGameState((current) => ({
         ...createInitialState(level),
         program: current.program,
@@ -239,6 +282,7 @@ export function useGameState(
     }
 
     if (result.status === "blocked") {
+      resumeFromPause();
       playRetry(settings.soundEffectsEnabled);
       speakText(result.message ?? "Try changing one step.", settings.narrationEnabled);
       setGameState((current) => ({
@@ -249,10 +293,12 @@ export function useGameState(
         activeCommandIndex: null,
         status: "retry",
         message: result.message ?? "Try changing one step.",
+        isPaused: false,
       }));
       return;
     }
 
+    resumeFromPause();
     playSuccess(settings.soundEffectsEnabled);
     speakText(result.message ?? "You did it!", settings.narrationEnabled);
     onLevelComplete(level.id);
@@ -264,8 +310,9 @@ export function useGameState(
       activeCommandIndex: null,
       status: "success",
       message: result.message ?? "You did it!",
+      isPaused: false,
     }));
-  }, [gameState.program, gameState.status, level, onLevelComplete, settings]);
+  }, [gameState.program, gameState.status, level, onLevelComplete, resumeFromPause, settings, waitIfPaused]);
 
   return {
     gameState,
@@ -277,5 +324,6 @@ export function useGameState(
     stopProgram,
     resumeEditing,
     showHint,
+    togglePause,
   };
 }

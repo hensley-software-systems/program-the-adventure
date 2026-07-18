@@ -90,6 +90,12 @@ function checkCondition(
 }
 
 function getSuccessMessage(level: LevelDefinition): string {
+  if (level.id >= 9000) {
+    return "Awesome random programming! Bloop crushed it!";
+  }
+  if (level.id === 11) {
+    return "Incredible! Bloop finished the biggest quest ever!";
+  }
   if (level.id === 10) {
     return "Amazing programming! Bloop rescued the cookie!";
   }
@@ -285,6 +291,29 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function waitWithPause(ms: number, context: ExecutionContext): Promise<void> {
+  if (ms <= 0) {
+    await context.waitIfPaused();
+    return;
+  }
+
+  const end = Date.now() + ms;
+  while (Date.now() < end) {
+    if (context.signal.aborted) {
+      return;
+    }
+
+    await context.waitIfPaused();
+
+    const remaining = end - Date.now();
+    if (remaining <= 0) {
+      return;
+    }
+
+    await wait(Math.min(50, remaining));
+  }
+}
+
 export async function executeProgram(
   commands: ProgramCommand[],
   context: ExecutionContext,
@@ -306,7 +335,7 @@ export async function executeProgram(
     }
 
     context.setActiveCommandIndex(index);
-    await wait(timing.highlight);
+    await waitWithPause(timing.highlight, context);
 
     const result = await executeCommand(
       commands[index],
@@ -327,9 +356,9 @@ export async function executeProgram(
       return result;
     }
 
-    await wait(timing.animation);
+    await waitWithPause(timing.animation, context);
     await context.waitForAnimation();
-    await wait(timing.pause);
+    await waitWithPause(timing.pause, context);
   }
 
   const evaluation = evaluateSuccessConditions(

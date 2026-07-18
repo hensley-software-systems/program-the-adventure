@@ -74,9 +74,9 @@ export function GameBoard({
 
   return (
     <div
-      className="grid gap-2 rounded-3xl bg-white/40 p-3 shadow-lg backdrop-blur"
+      className="grid w-full max-w-xl gap-2 rounded-3xl bg-white/40 p-3 shadow-lg backdrop-blur lg:max-w-none"
       style={{
-        gridTemplateColumns: `repeat(${level.boardSize.width}, minmax(0, 1fr))`,
+        gridTemplateColumns: `repeat(${level.boardSize.width}, minmax(3.25rem, 1fr))`,
       }}
       aria-label={`Game board level ${level.id}`}
     >

@@ -87,6 +87,7 @@ export interface GameState {
   status: GameStatus;
   message: string | null;
   lastAction: string | null;
+  isPaused: boolean;
 }
 
 export interface SavedProgress {
@@ -124,6 +125,7 @@ export interface ExecutionContext {
   onCollectedItemsUpdate: (items: string[]) => void;
   onDoorStatesUpdate: (states: Record<string, "open" | "closed">) => void;
   onAction: (action: string) => void;
+  waitIfPaused: () => Promise<void>;
   reducedMotion: boolean;
   fastAnimations: boolean;
 }

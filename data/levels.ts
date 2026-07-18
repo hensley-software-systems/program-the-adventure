@@ -260,7 +260,42 @@ export const LEVELS: LevelDefinition[] = [
       "Turn left, move, turn right, move, jump, move, move, move.",
     ],
   },
+  {
+    id: 11,
+    title: "Bloop's Biggest Quest",
+    concept: "Master sequence",
+    missionText:
+      "Go around, jump, moo at the door, grab the star, then get the cookie!",
+    narrationText:
+      "This is Bloop's biggest quest. Go around the bushes, jump the puddle, say Moo at the door, collect the star, and reach the cookie.",
+    boardSize: { width: 5, height: 5 },
+    characterStart: { position: { x: 0, y: 2 }, direction: "east" },
+    tiles: [
+      tile(0, 2, "start"),
+      tile(1, 2, "bush"),
+      tile(2, 2, "bush"),
+      tile(1, 1, "empty"),
+      tile(2, 1, "puddle"),
+      tile(3, 1, "door"),
+      tile(4, 1, "star"),
+      tile(3, 3, "cookie"),
+    ],
+    availableCommands: ["moveForward", "turnLeft", "turnRight", "jump", "sayMoo"],
+    maxCommands: 18,
+    successConditions: [
+      { type: "sayMooAtDoor", doorPosition: { x: 3, y: 1 } },
+      { type: "collectItem", item: "star" },
+      { type: "collectItem", item: "cookie" },
+    ],
+    hints: [
+      "Use everything Bloop has learned so far.",
+      "Go up, jump the puddle, then say Moo next to the door.",
+      "After the star, turn and walk down to the cookie.",
+    ],
+  },
 ];
+
+export const LEVEL_COUNT = LEVELS.length;
 
 export function getLevelById(id: number): LevelDefinition | undefined {
   return LEVELS.find((level) => level.id === id);
